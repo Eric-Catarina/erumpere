@@ -1,0 +1,12 @@
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\bin\Debug\net8.0\Game.Core.deps.json
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\bin\Debug\net8.0\Game.Core.dll
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\bin\Debug\net8.0\Game.Core.pdb
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.AssemblyInfo.cs
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.sourcelink.json
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.dll
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\refint\Game.Core.dll
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\Game.Core.pdb
+C:\Users\Usuario\Documents\GitHub\erumperem\Game.Core\obj\Debug\net8.0\ref\Game.Core.dll

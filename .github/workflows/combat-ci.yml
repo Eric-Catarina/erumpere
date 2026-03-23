@@ -1,0 +1,42 @@
+name: combat-ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore projects
+        run: |
+          dotnet restore Game.Core/Game.Core.csproj
+          dotnet restore Game.Tests/Game.Tests.csproj
+          dotnet restore Game.Simulations/Game.Simulations.csproj
+
+      - name: Build projects
+        run: |
+          dotnet build Game.Core/Game.Core.csproj --configuration Release --no-restore
+          dotnet build Game.Tests/Game.Tests.csproj --configuration Release --no-restore
+          dotnet build Game.Simulations/Game.Simulations.csproj --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test Game.Tests/Game.Tests.csproj --configuration Release --no-build
+
+      - name: Smoke simulation
+        run: dotnet run --project Game.Simulations/Game.Simulations.csproj --configuration Release -- --battles 100 --seed 42 --out smoke_artifacts
+
+      - name: Upload smoke CSV artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-csv
+          path: smoke_artifacts/*.csv
