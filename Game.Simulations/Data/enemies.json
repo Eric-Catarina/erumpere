@@ -1,0 +1,13 @@
+[
+  {
+    "id": "enemy_stunner_spider",
+    "name": "Aranha Stunadora",
+    "size": 1,
+    "baseStats": { "speed": 6, "accuracy": 1.0, "critChance": 0.1 },
+    "baseHealth": { "currentHp": 24, "maxHp": 24, "isDead": false, "isDeathblowPending": false },
+    "resistances": { "burnRes": 0.2, "blightRes": 0.5, "moveRes": 0.3, "stunRes": 0.4, "deathblowRes": 0.2 },
+    "skills": ["spider_bite", "spider_web", "wulfric_slash"],
+    "aiPolicy": "KillThenWeighted",
+    "element": "Anomaly"
+  }
+]
