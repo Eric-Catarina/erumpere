@@ -54,6 +54,12 @@ ExportedObj/
 *.opendb
 *.VC.db
 
+# Keep repository-level .NET projects tracked for headless simulation/tests.
+!Game.Core/*.csproj
+!Game.Tests/*.csproj
+!Game.Simulations/*.csproj
+!Erumperem.Combat.sln
+
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
