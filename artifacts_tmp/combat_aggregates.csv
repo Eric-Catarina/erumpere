@@ -1,0 +1,3 @@
+entity_type,entity_id,matches,wins,win_rate,uses,pick_rate,avg_damage_per_use,hit_rate,crit_rate,avg_damage_at_tier0,avg_damage_at_tier1,avg_damage_at_tier2,avg_damage_at_tier3
+"skill","wulfric_slash",1,0,0,14,0.7777777777777778,3.9285714285714284,0.9285714285714286,0,4.230769230769231,0,0,0
+"skill","spider_web",1,0,0,4,0.2222222222222222,1.75,0.75,0,2.3333333333333335,0,0,0
