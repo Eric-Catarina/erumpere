@@ -11,7 +11,7 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 *.log
-
+*.cache
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
 *.blend1
 *.blend1.meta
@@ -53,6 +53,9 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+# Headless combat simulation CSV output (regenerable)
+Game.Simulations/SimulationOutput/
 
 # Keep repository-level .NET projects tracked for headless simulation/tests.
 !Game.Core/*.csproj
@@ -102,3 +105,4 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+*.cache

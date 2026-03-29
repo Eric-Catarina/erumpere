@@ -85,9 +85,11 @@ public static class CombatAnalyticsExporter
         return sb.ToString();
     }
 
-    public static string BuildAggregatesCsv(IEnumerable<CombatEvent> events)
+    public static string BuildAggregatesCsv(IEnumerable<CombatEvent> events) =>
+        BuildAggregatesCsv(BuildAggregates(events));
+
+    public static string BuildAggregatesCsv(IReadOnlyList<CombatAggregateRow> rows)
     {
-        var rows = BuildAggregates(events);
         var sb = new StringBuilder();
         sb.AppendLine("entity_type,entity_id,matches,wins,win_rate,uses,pick_rate,avg_damage_per_use,hit_rate,crit_rate,avg_damage_at_tier0,avg_damage_at_tier1,avg_damage_at_tier2,avg_damage_at_tier3");
         foreach (var row in rows)
@@ -124,6 +126,7 @@ public static class CombatAnalyticsExporter
         var hitResolvedEvents = eventList.Where(e => e.EventType == BattleEventType.HitResolved).ToList();
         var damageEvents = eventList.Where(e => e.EventType == BattleEventType.DamageApplied).ToList();
 
+        var alliesVictory = Side.Allies.ToString();
         var skillRows = actionEvents
             .Where(e => !string.IsNullOrWhiteSpace(e.SkillId))
             .GroupBy(e => e.SkillId)
@@ -135,13 +138,17 @@ public static class CombatAnalyticsExporter
                 var uses = g.Count();
                 var hits = groupedHitResolution.Count(x => x.IsHit);
                 var crits = groupedHitResolution.Count(x => x.IsCrit);
+                var distinctBattleIds = g.Select(x => x.BattleId).Distinct().ToList();
+                var matches = distinctBattleIds.Count;
+                var wins = distinctBattleIds.Count(bid =>
+                    battleResults.TryGetValue(bid, out var result) && result == alliesVictory);
                 return new CombatAggregateRow
                 {
                     EntityType = "skill",
                     EntityId = g.Key,
-                    Matches = g.Select(x => x.BattleId).Distinct().Count(),
-                    Wins = g.Count(x => battleResults.TryGetValue(x.BattleId, out var result) && result == "Allies"),
-                    WinRate = SafeDiv(g.Count(x => battleResults.TryGetValue(x.BattleId, out var result) && result == "Allies"), g.Select(x => x.BattleId).Distinct().Count()),
+                    Matches = matches,
+                    Wins = wins,
+                    WinRate = SafeDiv(wins, matches),
                     Uses = uses,
                     PickRate = SafeDiv(uses, actionEvents.Count),
                     AvgDamagePerUse = SafeDiv(groupedDamage.Sum(x => x.DamageAmount), uses),

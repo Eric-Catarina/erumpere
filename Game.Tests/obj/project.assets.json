@@ -5524,19 +5524,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Usuario\\.nuget\\packages\\": {}
+    "C:\\Users\\Eric\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Tests\\Game.Tests.csproj",
+      "projectUniqueName": "d:\\Projects\\Erumperem\\Game.Tests\\Game.Tests.csproj",
       "projectName": "Game.Tests",
-      "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Tests\\Game.Tests.csproj",
-      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Tests\\obj\\",
+      "projectPath": "d:\\Projects\\Erumperem\\Game.Tests\\Game.Tests.csproj",
+      "packagesPath": "C:\\Users\\Eric\\.nuget\\packages\\",
+      "outputPath": "d:\\Projects\\Erumperem\\Game.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Eric\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5550,8 +5550,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj": {
-              "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj"
+            "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj": {
+              "projectPath": "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj"
             }
           }
         }
@@ -5565,7 +5565,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -5604,7 +5605,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

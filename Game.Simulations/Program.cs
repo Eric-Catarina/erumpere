@@ -34,7 +34,8 @@ for (var i = 0; i < parsed.Battles; i++)
 }
 
 var eventsCsv = CombatAnalyticsExporter.BuildEventsCsv(allEvents);
-var aggregatesCsv = CombatAnalyticsExporter.BuildAggregatesCsv(allEvents);
+var aggregates = CombatAnalyticsExporter.BuildAggregates(allEvents);
+var aggregatesCsv = CombatAnalyticsExporter.BuildAggregatesCsv(aggregates);
 var eventsPath = Path.Combine(parsed.OutputDirectory, "combat_events.csv");
 var aggregatesPath = Path.Combine(parsed.OutputDirectory, "combat_aggregates.csv");
 File.WriteAllText(eventsPath, eventsCsv);
@@ -44,12 +45,18 @@ Console.WriteLine($"Simulations: {parsed.Battles}");
 Console.WriteLine($"Events CSV: {eventsPath}");
 Console.WriteLine($"Aggregates CSV: {aggregatesPath}");
 
+foreach (var row in aggregates.OrderBy(r => r.EntityId))
+{
+    Console.WriteLine($"Skill {row.EntityId}: win_rate={row.WinRate:0.###} ({row.Wins}/{row.Matches} matches)");
+}
+
 static BattleState BuildRandomizedBattle(IReadOnlyList<SkillDefinition> skills, IRandomSource random)
 {
+    // Enough allied bodies that wins are common; 3v3 keeps both sides plausible for aggregate stats.
     var battle = BattleFactory.CreateSampleBattle(
         skills,
-        allyCount: 2,
-        enemyCount: 4,
+        allyCount: 3,
+        enemyCount: 3,
         corruptionValue: random.Next(0, 101));
 
     // Light randomization for headless bulk checks.
@@ -83,7 +90,7 @@ internal static class ArgsParser
     {
         var battles = 100;
         var seed = 42;
-        var output = Path.Combine(Directory.GetCurrentDirectory(), "artifacts");
+        var output = DefaultSimulationOutputDirectory();
         var skillsPath = string.Empty;
         var enemiesPath = string.Empty;
         var skillTreesPath = string.Empty;
@@ -132,5 +139,12 @@ internal static class ArgsParser
             EnemiesPath = enemiesPath,
             SkillTreesPath = skillTreesPath,
         };
+    }
+
+    // CSV output folder for headless runs; authoritative game JSON is in Data/.
+    private static string DefaultSimulationOutputDirectory()
+    {
+        var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+        return Path.Combine(projectDir, "SimulationOutput");
     }
 }

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj": {}
+    "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj": {
+    "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj",
+        "projectUniqueName": "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj",
         "projectName": "Game.Core",
-        "projectPath": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\Game.Core.csproj",
-        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Usuario\\Documents\\GitHub\\erumperem\\Game.Core\\obj\\",
+        "projectPath": "d:\\Projects\\Erumperem\\Game.Core\\Game.Core.csproj",
+        "packagesPath": "C:\\Users\\Eric\\.nuget\\packages\\",
+        "outputPath": "d:\\Projects\\Erumperem\\Game.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Eric\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,7 +39,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -60,7 +61,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.416/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
