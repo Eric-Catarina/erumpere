@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 4102456}
   - component: {fileID: 4102455}
   - component: {fileID: 4102454}
+  - component: {fileID: 4102457}
   m_Layer: 5
   m_Name: Credits
   m_TagString: Untagged
@@ -201,19 +202,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4102455}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenPanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1240904826}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &4102455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +241,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4102452}
   m_CullTransparentMesh: 1
+--- !u!114 &4102457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4102452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 1240904826}
+    panelToHide: {fileID: 656568153}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &95909378
 GameObject:
   m_ObjectHideFlags: 0
@@ -1391,9 +1405,6 @@ RectTransform:
   m_Children:
   - {fileID: 1175415831}
   - {fileID: 1709429594}
-  - {fileID: 2078858173}
-  - {fileID: 1145263323}
-  - {fileID: 1240904827}
   m_Father: {fileID: 2051272780}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1584,6 +1595,7 @@ GameObject:
   - component: {fileID: 758175298}
   - component: {fileID: 758175297}
   - component: {fileID: 758175296}
+  - component: {fileID: 758175299}
   m_Layer: 5
   m_Name: Extras
   m_TagString: Untagged
@@ -1705,6 +1717,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 758175294}
   m_CullTransparentMesh: 1
+--- !u!114 &758175299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 758175294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 656568153}
+    panelToHide: {fileID: 2043657428}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &911452565
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,6 +2288,7 @@ GameObject:
   - component: {fileID: 1102179593}
   - component: {fileID: 1102179592}
   - component: {fileID: 1102179591}
+  - component: {fileID: 1102179594}
   m_Layer: 5
   m_Name: Settings
   m_TagString: Untagged
@@ -2321,19 +2359,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1102179592}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenPanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1551099985}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1102179592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2372,6 +2398,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102179589}
   m_CullTransparentMesh: 1
+--- !u!114 &1102179594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102179589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 1551099985}
+    panelToHide: {fileID: 2043657428}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1145263322
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,7 +2455,7 @@ RectTransform:
   m_Children:
   - {fileID: 954884826}
   - {fileID: 1798119980}
-  m_Father: {fileID: 656568154}
+  m_Father: {fileID: 2051272780}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2461,6 +2512,7 @@ GameObject:
   - component: {fileID: 1157566985}
   - component: {fileID: 1157566984}
   - component: {fileID: 1157566983}
+  - component: {fileID: 1157566986}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -2531,19 +2583,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1157566984}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ClosePanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 656568153}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1157566984
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2582,6 +2622,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157566981}
   m_CullTransparentMesh: 1
+--- !u!114 &1157566986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157566981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 2043657428}
+    panelToHide: {fileID: 656568153}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1175415830
 GameObject:
   m_ObjectHideFlags: 0
@@ -2731,6 +2796,7 @@ GameObject:
   - component: {fileID: 1178343455}
   - component: {fileID: 1178343454}
   - component: {fileID: 1178343453}
+  - component: {fileID: 1178343456}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -2801,19 +2867,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1178343454}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ClosePanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1551099985}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1178343454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2852,6 +2906,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178343451}
   m_CullTransparentMesh: 1
+--- !u!114 &1178343456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1178343451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 2043657428}
+    panelToHide: {fileID: 1551099985}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1240904826
 GameObject:
   m_ObjectHideFlags: 0
@@ -2884,7 +2963,7 @@ RectTransform:
   m_Children:
   - {fileID: 114997727}
   - {fileID: 1533091863}
-  m_Father: {fileID: 656568154}
+  m_Father: {fileID: 2051272780}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -3352,6 +3431,7 @@ GameObject:
   - component: {fileID: 1405637209}
   - component: {fileID: 1405637208}
   - component: {fileID: 1405637207}
+  - component: {fileID: 1405637210}
   m_Layer: 5
   m_Name: Features
   m_TagString: Untagged
@@ -3422,19 +3502,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1405637208}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenPanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1145263322}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1405637208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3473,6 +3541,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405637205}
   m_CullTransparentMesh: 1
+--- !u!114 &1405637210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405637205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 1145263322}
+    panelToHide: {fileID: 656568153}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1507146155
 GameObject:
   m_ObjectHideFlags: 0
@@ -3759,6 +3852,7 @@ GameObject:
   - component: {fileID: 1533091866}
   - component: {fileID: 1533091865}
   - component: {fileID: 1533091864}
+  - component: {fileID: 1533091867}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -3829,19 +3923,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1533091865}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ClosePanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1240904826}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1533091865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3880,6 +3962,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1533091862}
   m_CullTransparentMesh: 1
+--- !u!114 &1533091867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1533091862}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 656568153}
+    panelToHide: {fileID: 1240904826}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1545877635
 GameObject:
   m_ObjectHideFlags: 0
@@ -4028,6 +4135,7 @@ GameObject:
   - component: {fileID: 1551099986}
   - component: {fileID: 1551099988}
   - component: {fileID: 1551099987}
+  - component: {fileID: 1551099989}
   m_Layer: 5
   m_Name: SettingsPanel
   m_TagString: Untagged
@@ -4094,6 +4202,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1551099985}
   m_CullTransparentMesh: 1
+--- !u!114 &1551099989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551099985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a564c1efc7fe0444bb856528b84d37f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Panel
 --- !u!1 &1618626634
 GameObject:
   m_ObjectHideFlags: 0
@@ -4216,6 +4336,7 @@ GameObject:
   - component: {fileID: 1743279825}
   - component: {fileID: 1743279824}
   - component: {fileID: 1743279823}
+  - component: {fileID: 1743279826}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -4286,19 +4407,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1743279824}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ClosePanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 2078858172}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1743279824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4337,6 +4446,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1743279821}
   m_CullTransparentMesh: 1
+--- !u!114 &1743279826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743279821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 656568153}
+    panelToHide: {fileID: 2078858172}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1798119979
 GameObject:
   m_ObjectHideFlags: 0
@@ -4349,6 +4483,7 @@ GameObject:
   - component: {fileID: 1798119983}
   - component: {fileID: 1798119982}
   - component: {fileID: 1798119981}
+  - component: {fileID: 1798119984}
   m_Layer: 5
   m_Name: Back
   m_TagString: Untagged
@@ -4419,19 +4554,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1798119982}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ClosePanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 1145263322}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1798119982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4470,6 +4593,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1798119979}
   m_CullTransparentMesh: 1
+--- !u!114 &1798119984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798119979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 656568153}
+    panelToHide: {fileID: 1145263322}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1865956558
 GameObject:
   m_ObjectHideFlags: 0
@@ -4619,6 +4767,7 @@ GameObject:
   - component: {fileID: 1917919187}
   - component: {fileID: 1917919186}
   - component: {fileID: 1917919185}
+  - component: {fileID: 1917919188}
   m_Layer: 5
   m_Name: Help
   m_TagString: Untagged
@@ -4689,19 +4838,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1917919186}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 911452566}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: OpenPanel
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 2078858172}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1917919186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4740,6 +4877,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917919183}
   m_CullTransparentMesh: 1
+--- !u!114 &1917919188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1917919183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdd008c10a152e24ea23e2d24ad38dad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangePanelButtonController
+  uiButtonModel:
+    panelToOpen: {fileID: 2078858172}
+    panelToHide: {fileID: 656568153}
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &1944122876
 GameObject:
   m_ObjectHideFlags: 0
@@ -4888,6 +5050,7 @@ GameObject:
   - component: {fileID: 2043657429}
   - component: {fileID: 2043657431}
   - component: {fileID: 2043657430}
+  - component: {fileID: 2043657432}
   m_Layer: 5
   m_Name: MainMenuPanel
   m_TagString: Untagged
@@ -4954,6 +5117,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2043657428}
   m_CullTransparentMesh: 1
+--- !u!114 &2043657432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043657428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a564c1efc7fe0444bb856528b84d37f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Panel
 --- !u!1 &2051272776
 GameObject:
   m_ObjectHideFlags: 0
@@ -5050,6 +5225,9 @@ RectTransform:
   m_Children:
   - {fileID: 2043657429}
   - {fileID: 1551099986}
+  - {fileID: 2078858173}
+  - {fileID: 1145263323}
+  - {fileID: 1240904827}
   - {fileID: 656568154}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5070,6 +5248,7 @@ GameObject:
   - component: {fileID: 2074791506}
   - component: {fileID: 2074791505}
   - component: {fileID: 2074791504}
+  - component: {fileID: 2074791507}
   m_Layer: 5
   m_Name: Play
   m_TagString: Untagged
@@ -5140,19 +5319,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2074791505}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1618626635}
-        m_TargetAssemblyTypeName: ScenesManager, Assembly-CSharp
-        m_MethodName: LoadNextScene
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &2074791505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5191,6 +5358,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074791502}
   m_CullTransparentMesh: 1
+--- !u!114 &2074791507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074791502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67bf75c88246b01499a7c22d7a155657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChangeSceneButtonController
+  uiButtonModel:
+    sceneName: CombatScene
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects:
+    - {fileID: 11400000, guid: 70bb829505ac4474094549fb16802700, type: 2}
+    - {fileID: 11400000, guid: b4e519ca65770ab42b9057e8fe8af045, type: 2}
+    _hoverExitEffects:
+    - {fileID: 11400000, guid: 6205a04be34c645468fab701497101c3, type: 2}
+    - {fileID: 11400000, guid: 3f87098296a87f44da2f239b70d3c5f4, type: 2}
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &2078858172
 GameObject:
   m_ObjectHideFlags: 0
@@ -5223,7 +5418,7 @@ RectTransform:
   m_Children:
   - {fileID: 1944122877}
   - {fileID: 1743279822}
-  m_Father: {fileID: 656568154}
+  m_Father: {fileID: 2051272780}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
