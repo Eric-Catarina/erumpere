@@ -1462,6 +1462,7 @@ GameObject:
   - component: {fileID: 680364540}
   - component: {fileID: 680364539}
   - component: {fileID: 680364538}
+  - component: {fileID: 680364541}
   m_Layer: 5
   m_Name: Quit
   m_TagString: Untagged
@@ -1583,6 +1584,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680364536}
   m_CullTransparentMesh: 1
+--- !u!114 &680364541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680364536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062aad8a9b82c72438843697f81b20cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CloseApplicationButtonController
+  uiButtonView:
+    _defaultEnterEffects: []
+    _defaultExitEffects: []
+    _hoverEnterEffects: []
+    _hoverExitEffects: []
+    _pressedEnterEffects: []
+    _pressedExitEffects: []
+    _disabledEnterEffects: []
+    _disabledExitEffects: []
+  isDisabled: 0
 --- !u!1 &758175294
 GameObject:
   m_ObjectHideFlags: 0
