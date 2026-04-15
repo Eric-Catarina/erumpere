@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using DG.Tweening;
 using Game.Core.Abstractions;
 using Game.Core.Analytics;
 using Game.Core.Data;
@@ -30,6 +32,20 @@ namespace Erumperem.Combat
         [Header("Debug")]
         [SerializeField] private bool logEventsToConsole = true;
 
+        [Header("Apresentação por ação")]
+        [Tooltip("Opcional: pilha de mensagens (prefab com TMP).")]
+        [SerializeField] private CombatLogStackView combatLog;
+        [SerializeField] private float defaultPlaySeconds = 2.5f;
+        [SerializeField] private float defaultPostPauseSeconds = 1.5f;
+        [SerializeField] private CombatSkillPresentationTiming[] skillTimings = Array.Empty<CombatSkillPresentationTiming>();
+
+        [Header("Feedback de dano (DOTween)")]
+        [SerializeField] private Vector3 damagePunchScale = new(0.18f, 0.28f, 0.18f);
+        [SerializeField] private float damagePunchDuration = 0.32f;
+        [SerializeField] private int damagePunchVibrato = 8;
+        [SerializeField] private float damagePunchElasticity = 0.55f;
+        [SerializeField] private float damageShrinkDuration = 0.42f;
+
         private BattleState _state;
         private BattleSimulator _sim;
         private CombatEventCollector _collector;
@@ -43,6 +59,8 @@ namespace Erumperem.Combat
         private Combatant _pendingPlayerActor;
 
         private readonly Dictionary<string, Transform> _views = new(StringComparer.Ordinal);
+        private readonly HashSet<string> _damageFeedbackBusy = new(StringComparer.Ordinal);
+        private bool _presentationBusy;
         private Combatant _selectedEnemyTarget;
         private Camera _camera;
 
@@ -101,6 +119,14 @@ namespace Erumperem.Combat
                 "teclas 1–7 = skill (no turno do herói). Inimigos jogam até ser a tua vez.");
         }
 
+        private void OnDisable()
+        {
+            foreach (var kv in _views)
+            {
+                kv.Value?.DOKill(false);
+            }
+        }
+
         private void BeginRound()
         {
             _state.TurnNumber++;
@@ -119,7 +145,7 @@ namespace Erumperem.Combat
 
             PickTargetFromMouse();
 
-            while (!_battleEnded && !_needsPlayerInput)
+            while (!_battleEnded && !_needsPlayerInput && !_presentationBusy)
             {
                 if (!AdvanceCombatStep())
                 {
@@ -127,7 +153,7 @@ namespace Erumperem.Combat
                 }
             }
 
-            if (_needsPlayerInput)
+            if (_needsPlayerInput && !_presentationBusy)
             {
                 TryPlayerHotkeys();
             }
@@ -186,6 +212,11 @@ namespace Erumperem.Combat
 
         private bool AdvanceCombatStep()
         {
+            if (_presentationBusy)
+            {
+                return false;
+            }
+
             if (_state.IsFinished)
             {
                 EndBattle();
@@ -232,8 +263,16 @@ namespace Erumperem.Combat
             var chosenAiAction = _sim.ChooseAiAction(_state, actor);
             if (chosenAiAction != null)
             {
-                _sim.ResolveChosenAction(_state, chosenAiAction);
-                LogLastEvents();
+                _presentationBusy = true;
+                StartCoroutine(
+                    PresentActionRoutine(
+                        chosenAiAction,
+                        () =>
+                        {
+                            _actorIndex++;
+                            _preparedThisStep = false;
+                        }));
+                return false;
             }
 
             _actorIndex++;
@@ -247,7 +286,7 @@ namespace Erumperem.Combat
         private void TryPlayerHotkeys()
         {
             var keyboard = Keyboard.current;
-            if (keyboard == null || _pendingPlayerActor == null)
+            if (keyboard == null || _pendingPlayerActor == null || _presentationBusy)
             {
                 return;
             }
@@ -273,12 +312,17 @@ namespace Erumperem.Combat
                     return;
                 }
 
-                _sim.ResolveChosenAction(_state, action);
-                LogLastEvents();
-                _actorIndex++;
-                _preparedThisStep = false;
                 _needsPlayerInput = false;
                 _pendingPlayerActor = null;
+                _presentationBusy = true;
+                StartCoroutine(
+                    PresentActionRoutine(
+                        action,
+                        () =>
+                        {
+                            _actorIndex++;
+                            _preparedThisStep = false;
+                        }));
                 return;
             }
         }
@@ -306,6 +350,119 @@ namespace Erumperem.Combat
 
             var last = _collector.Events[^1];
             Debug.Log($"[Combat] {last.EventType} turn={last.Turn} actor={last.ActorId} target={last.TargetId} skill={last.SkillId} dmg={last.DamageAmount}");
+        }
+
+        private void GetTimingForSkill(string skillId, out float playSeconds, out float postPauseSeconds)
+        {
+            playSeconds = defaultPlaySeconds;
+            postPauseSeconds = defaultPostPauseSeconds;
+            if (skillTimings == null)
+            {
+                return;
+            }
+
+            foreach (var entry in skillTimings)
+            {
+                if (entry == null || string.IsNullOrEmpty(entry.skillId))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(entry.skillId, skillId, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                playSeconds = Mathf.Max(0f, entry.playSeconds);
+                postPauseSeconds = Mathf.Max(0f, entry.postPauseSeconds);
+                return;
+            }
+        }
+
+        private IEnumerator PresentActionRoutine(ChosenAction action, Action onStepComplete)
+        {
+            try
+            {
+                var startIdx = _collector.Events.Count;
+                _sim.ResolveChosenAction(_state, action);
+                var endIdx = _collector.Events.Count;
+                var count = endIdx - startIdx;
+                if (count > 0)
+                {
+                    var slice = _collector.Events.GetRange(startIdx, count);
+                    foreach (var line in CombatNarrativeFormatter.BuildLines(_state, action, slice))
+                    {
+                        combatLog?.Push(line);
+                    }
+
+                    foreach (var combatEvent in slice)
+                    {
+                        if (combatEvent.EventType == BattleEventType.DamageApplied && combatEvent.DamageAmount > 0)
+                        {
+                            PlayDamageVisualFeedback(combatEvent.TargetId);
+                        }
+                    }
+
+                    LogLastEvents();
+                }
+
+                GetTimingForSkill(action.Skill.Id, out var play, out var postPause);
+                if (play > 0f)
+                {
+                    yield return new WaitForSeconds(play);
+                }
+
+                if (_battleEnded)
+                {
+                    yield break;
+                }
+
+                if (postPause > 0f)
+                {
+                    yield return new WaitForSeconds(postPause);
+                }
+            }
+            finally
+            {
+                _presentationBusy = false;
+                onStepComplete?.Invoke();
+                if (_state.IsFinished && !_battleEnded)
+                {
+                    EndBattle();
+                }
+            }
+        }
+
+        private void PlayDamageVisualFeedback(string targetId)
+        {
+            if (!_views.TryGetValue(targetId, out var root) || root == null)
+            {
+                return;
+            }
+
+            var combatant = FindCombatant(targetId);
+            if (combatant == null || combatant.Health.IsDead)
+            {
+                return;
+            }
+
+            _damageFeedbackBusy.Add(targetId);
+            root.DOKill(false);
+            var sequence = DOTween.Sequence();
+            sequence.SetTarget(root);
+            sequence.Append(
+                root.DOPunchScale(
+                    damagePunchScale,
+                    damagePunchDuration,
+                    damagePunchVibrato,
+                    damagePunchElasticity));
+            if (syncHpAsVerticalScale)
+            {
+                var targetY = Mathf.Max(0.3f, combatant.Health.CurrentHp / (float)combatant.Health.MaxHp);
+                sequence.Append(root.DOScaleY(targetY, damageShrinkDuration).SetEase(Ease.OutCubic));
+            }
+
+            sequence.OnComplete(() => _damageFeedbackBusy.Remove(targetId));
         }
 
         private bool TryBindSceneViewsToBattle()
@@ -395,7 +552,7 @@ namespace Erumperem.Combat
                 else
                 {
                     unitRoot.gameObject.SetActive(true);
-                    if (syncHpAsVerticalScale)
+                    if (syncHpAsVerticalScale && !_damageFeedbackBusy.Contains(combatantId))
                     {
                         unitRoot.localScale = new Vector3(
                             1f,
