@@ -37,6 +37,8 @@ namespace Erumperem.Combat
         [Header("Apresentação por ação")]
         [Tooltip("Opcional: pilha de mensagens (prefab com TMP).")]
         [SerializeField] private CombatLogStackView combatLog;
+        [Tooltip("Opcional: UI subscreve eventos (texto hotbar / esconder durante ação).")]
+        [SerializeField] private CombatPresentationHub presentationHub;
         [SerializeField] private float defaultPlaySeconds = 2.5f;
         [SerializeField] private float defaultPostPauseSeconds = 1.5f;
         [SerializeField] private CombatSkillPresentationTiming[] skillTimings = Array.Empty<CombatSkillPresentationTiming>();
@@ -175,6 +177,30 @@ namespace Erumperem.Combat
             SyncUnitVisuals();
         }
 
+        private void PublishPlayerSkillHelpForAlly(Combatant ally, int allyIndex)
+        {
+            if (presentationHub == null || ally == null)
+            {
+                return;
+            }
+
+            var text = CombatSkillBarDebug.BuildHotbarPanelText(ally, allyIndex, _state, _sim, _selectedEnemyTarget);
+            presentationHub.PublishPlayerSkillHelp(text);
+        }
+
+        private int FindAllyIndex(Combatant ally)
+        {
+            for (var allySearchIndex = 0; allySearchIndex < _state.Allies.Count; allySearchIndex++)
+            {
+                if (ReferenceEquals(_state.Allies[allySearchIndex], ally))
+                {
+                    return allySearchIndex;
+                }
+            }
+
+            return 0;
+        }
+
         private void PickTargetFromMouse()
         {
             var mouse = Mouse.current;
@@ -210,6 +236,7 @@ namespace Erumperem.Combat
                 }
 
                 CombatSkillBarDebug.LogHotbar(hitAlly, idx, _state);
+                PublishPlayerSkillHelpForAlly(hitAlly, idx);
                 return;
             }
 
@@ -222,6 +249,10 @@ namespace Erumperem.Combat
 
             _selectedEnemyTarget = hitEnemy;
             Debug.Log($"Alvo: {_selectedEnemyTarget.Identity.Id} (HP {_selectedEnemyTarget.Health.CurrentHp}/{_selectedEnemyTarget.Health.MaxHp})");
+            if (_needsPlayerInput && _pendingPlayerActor != null)
+            {
+                PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
+            }
         }
 
         private bool AdvanceCombatStep()
@@ -271,6 +302,7 @@ namespace Erumperem.Combat
             {
                 _needsPlayerInput = true;
                 _pendingPlayerActor = actor;
+                PublishPlayerSkillHelpForAlly(actor, FindAllyIndex(actor));
                 return false;
             }
 
@@ -323,6 +355,7 @@ namespace Erumperem.Combat
                 if (action == null)
                 {
                     Debug.LogWarning($"Skill slot {i + 1} inválida (CD, alvo, rank ou fora do loadout).");
+                    PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
                     return;
                 }
 
@@ -348,6 +381,7 @@ namespace Erumperem.Combat
                 return;
             }
 
+            presentationHub?.PublishCombatEnded();
             _battleEnded = true;
             _needsPlayerInput = false;
             _sim.EmitBattleEnded(_state);
@@ -399,6 +433,7 @@ namespace Erumperem.Combat
             {
                 StopActorActionRock();
                 combatCinemachineDirector?.EndActionFocus();
+                presentationHub?.PublishActionPresentationStarted();
                 GetTimingForSkill(action.Skill.Id, out var play, out var postPause);
                 var rockDuration = Mathf.Max(0f, play + postPause);
 
@@ -460,11 +495,18 @@ namespace Erumperem.Combat
                 StopActorActionRock();
                 _presentationBusy = false;
                 onStepComplete?.Invoke();
+                StartCoroutine(NotifyPresentationEndedDeferred());
                 if (_state.IsFinished && !_battleEnded)
                 {
                     EndBattle();
                 }
             }
+        }
+
+        private IEnumerator NotifyPresentationEndedDeferred()
+        {
+            yield return null;
+            presentationHub?.PublishActionPresentationEnded();
         }
 
         private void BeginActorActionRock(ChosenAction action, float totalDurationSeconds)
