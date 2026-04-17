@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Game.Core.Domain;
+using Game.Core.Engine;
 using Game.Core.Models;
 using UnityEngine;
 
@@ -14,6 +15,19 @@ namespace Erumperem.Combat
     {
         public static void LogHotbar(Combatant ally, int allyIndex, BattleState state)
         {
+            Debug.Log(BuildHotbarPanelText(ally, allyIndex, state, null, null));
+        }
+
+        /// <summary>
+        /// Texto multi-linha da hotbar [1]–[7]. Com <paramref name="simulatorForAvailability"/>, acrescenta sufixo por slot quando skill não pode ser usada agora.
+        /// </summary>
+        public static string BuildHotbarPanelText(
+            Combatant ally,
+            int allyIndex,
+            BattleState state,
+            BattleSimulator simulatorForAvailability = null,
+            Combatant selectedEnemyTarget = null)
+        {
             var skillIds = ally.SkillLoadout.Skills
                 .Where(id => state.SkillsById.ContainsKey(id))
                 .Take(7)
@@ -25,7 +39,19 @@ namespace Erumperem.Combat
             for (var i = 0; i < skillIds.Count; i++)
             {
                 var skill = state.SkillsById[skillIds[i]];
-                hotbarText.AppendLine($"[{i + 1}]- {SummarizeSkill(skill)}");
+                var line = $"[{i + 1}]- {SummarizeSkill(skill)}";
+                if (simulatorForAvailability != null)
+                {
+                    line += DescribeAvailabilitySuffix(
+                        state,
+                        simulatorForAvailability,
+                        ally,
+                        hotkeyIndexZeroBased: i,
+                        selectedEnemyTarget,
+                        skill);
+                }
+
+                hotbarText.AppendLine(line);
             }
 
             if (skillIds.Count == 0)
@@ -33,7 +59,28 @@ namespace Erumperem.Combat
                 hotbarText.AppendLine("(sem skills no catálogo)");
             }
 
-            Debug.Log(hotbarText.ToString());
+            return hotbarText.ToString().TrimEnd();
+        }
+
+        private static string DescribeAvailabilitySuffix(
+            BattleState state,
+            BattleSimulator simulator,
+            Combatant actor,
+            int hotkeyIndexZeroBased,
+            Combatant selectedEnemyTarget,
+            SkillDefinition skill)
+        {
+            if (!simulator.IsSkillUsable(actor, skill))
+            {
+                return " — indisponível (cooldown ou bloqueio)";
+            }
+
+            if (PlayerActionBuilder.TryCreate(state, simulator, actor, hotkeyIndexZeroBased, selectedEnemyTarget) != null)
+            {
+                return string.Empty;
+            }
+
+            return " — indisponível (alvo, rank ou outro)";
         }
 
         private static string SummarizeSkill(SkillDefinition skillDefinition)
