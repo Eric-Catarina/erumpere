@@ -59,10 +59,10 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 43203dd543070d74fa869e735773825a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: ae9ebc6394bf2394cb5ff3f1a4580b50, type: 2}
+      objectReference: {fileID: 2100000, guid: ee42ce3ac147eba4e9cae3bcee167689, type: 2}
     - target: {fileID: 919132149155446097, guid: 43203dd543070d74fa869e735773825a, type: 3}
       propertyPath: m_Name
-      value: Grass2
+      value: TallGrass
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 43203dd543070d74fa869e735773825a, type: 3}
       propertyPath: m_StaticEditorFlags
