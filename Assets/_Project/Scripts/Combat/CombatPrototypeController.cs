@@ -11,13 +11,14 @@ using Game.Core.Domain;
 using Game.Core.Engine;
 using Game.Core.Models;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace Erumperem.Combat
 {
     /// <summary>
     /// Protótipo 2v4: unidades já colocadas na cena; liga <see cref="CombatCapsuleTag"/> ao estado do <see cref="BattleSimulator"/>.
-    /// Clique para alvo inimigo / hotbar; teclas 1–7 para skills.
+    /// Clique no alvo para lançar a skill; teclas 1–7 só escolhem o slot (mesmo que o botão).
     /// </summary>
     public sealed class CombatPrototypeController : MonoBehaviour
     {
@@ -45,6 +46,20 @@ namespace Erumperem.Combat
 
         [Header("Cinemachine (opcional)")]
         [SerializeField] private CombatCinemachineDirector combatCinemachineDirector;
+
+        [Header("UI — barra de skills (hover)")]
+        [Tooltip("Opcional: uma row por combatente, hover 3D mostra a linha; clique no skill + clique no inimigo para lançar.")]
+        [SerializeField] private CombatSkillButtonBarUIManager skillButtonBarUIManager;
+
+        [Header("Indicador de turno (opcional)")]
+        [Tooltip("Instanciado abaixo do herói cujo input está a ser pedido. Atribui o prefab CurrentTurnMarker na cena.")]
+        [SerializeField] private GameObject currentTurnMarkerPrefab;
+        [SerializeField] private Vector3 currentTurnMarkerLocalOffset;
+        [Tooltip("Rotação base do prefab (ex.: 90,0,0). Só o eixo Z é animado (varia 0, 90, 270, …).")]
+        [SerializeField] private Vector3 currentTurnMarkerBaseEuler = new(90f, 0f, 0f);
+        [Tooltip("Graus por segundo a somar no Z local, em cima de base (ex.: 90,0,0) → 90,0,θ.")]
+        [FormerlySerializedAs("currentTurnMarkerSpinDegreesPerSecond")]
+        [SerializeField] private float currentTurnMarkerZSpinDegreesPerSecond = 90f;
 
         [Header("Feedback de dano (DOTween)")]
         [SerializeField] private Vector3 damagePunchScale = new(0.18f, 0.28f, 0.18f);
@@ -78,6 +93,111 @@ namespace Erumperem.Combat
         private Vector3 _actionRockBaseLocalPosition;
         private Combatant _selectedEnemyTarget;
         private Camera _camera;
+        private int? _skillBarSelectedSlot;
+        private string _skillBarSelectedOwnerId;
+        private Transform _currentTurnMarkerTransform;
+        private string _turnMarkerLastCombatantId;
+        private float _turnMarkerSpinZDegrees;
+        private bool _leftClickPressedThisFrame;
+        private bool _rightClickPressedThisFrame;
+        private int? _skillSlotPressedThisFrame;
+        private Vector2 _pointerScreenPosition;
+        private bool _hasPointerScreenPosition;
+
+        public BattleState BattleState => _state;
+        public BattleSimulator BattleSimulator => _sim;
+        public Combatant CurrentSelectedEnemy => _selectedEnemyTarget;
+
+        public Combatant FindCombatantById(string combatantId) => FindCombatant(combatantId);
+
+        public bool IsPlayerCommandingCombatant(Combatant combatant)
+        {
+            if (combatant == null || _presentationBusy)
+            {
+                return false;
+            }
+
+            if (!_needsPlayerInput || _pendingPlayerActor == null)
+            {
+                return false;
+            }
+
+            return ReferenceEquals(combatant, _pendingPlayerActor) && IsPlayerControlled(combatant);
+        }
+
+        public void GetSkillBarSelection(out int? zeroBasedSlot, out string ownerCombatantId)
+        {
+            zeroBasedSlot = _skillBarSelectedSlot;
+            ownerCombatantId = _skillBarSelectedOwnerId;
+        }
+
+        /// <summary>
+        /// Único ponto para escolher um slot da hotbar (clique no botão ou tecla 1–7). Só um slot ativo:
+        /// escolher outro (ex.: estava na 1 e clica ou pressiona 3) substitui a seleção anterior.
+        /// </summary>
+        public bool TrySelectSkillBarSlot(string ownerCombatantId, int zeroBasedSlot)
+        {
+            if (_battleEnded || _state == null || _presentationBusy)
+            {
+                return false;
+            }
+
+            if (!_needsPlayerInput || _pendingPlayerActor == null)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(ownerCombatantId) || zeroBasedSlot < 0 || zeroBasedSlot > 6)
+            {
+                return false;
+            }
+
+            if (!string.Equals(ownerCombatantId, _pendingPlayerActor.Identity.Id, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+ClearAllSkillBarSelections();
+            if (!CombatSkillSlotUiEligibility.IsSlotUiInteractable(
+                    _state,
+                    _sim,
+                    _pendingPlayerActor,
+                    zeroBasedSlot,
+                    _selectedEnemyTarget))
+            {
+                return false;
+            }
+
+            _skillBarSelectedOwnerId = ownerCombatantId;
+            _skillBarSelectedSlot = zeroBasedSlot;
+            skillButtonBarUIManager?.SyncVisibleRowWithBattle();
+            return true;
+        }
+
+        public void ClearSkillBarSelection()
+        {
+            if (!_skillBarSelectedSlot.HasValue && string.IsNullOrEmpty(_skillBarSelectedOwnerId))
+            {
+                return;
+            }
+
+            _skillBarSelectedSlot = null;
+            _skillBarSelectedOwnerId = null;
+            skillButtonBarUIManager?.OnSkillBarSelectionCleared();
+        }
+        public void ClearAllSkillBarSelections()
+        {
+            // Actually goes through all the skill bar slots and clears them, not just the one that is selected, and clear all dotween tweens for all skill bar slots
+            for (var i = 0; i < 7; i++)
+            {
+                ClearSkillBarSelection();
+                DOTween.Kill(GetSkillBarSlotTweenId(i)); // Get the tween id for the skill bar slot and kill it
+
+            }
+        }
+        private string GetSkillBarSlotTweenId(int zeroBasedSlot) => $"{_skillBarSelectedOwnerId}_SkillBarSlot_{zeroBasedSlot}";
+        private string GetSkillBarSlotTweenId(string ownerCombatantId, int zeroBasedSlot) => $"{ownerCombatantId}_SkillBarSlot_{zeroBasedSlot}";
+
 
         private void Awake()
         {
@@ -86,7 +206,11 @@ namespace Erumperem.Combat
             {
                 Debug.LogError("CombatPrototypeController: defina a Main Camera na cena.");
             }
+        }
 
+        private void OnEnable()
+        {
+            SubscribeToInputEvents();
         }
 
         private void Start()
@@ -126,21 +250,75 @@ namespace Erumperem.Combat
                 return;
             }
 
+            skillButtonBarUIManager?.Initialize(this);
+
             _sim.EmitBattleStarted(_state);
             BeginRound();
 
             Debug.Log(
                 "Combate: clique num herói para listar skills [1]–[7] no console; clique num inimigo para alvo; " +
-                "teclas 1–7 = skill (no turno do herói). Inimigos jogam até ser a tua vez.");
+                "teclas 1–7 = escolher skill; clique no alvo para lançar. Inimigos jogam até ser a tua vez.");
         }
 
         private void OnDisable()
         {
+            UnsubscribeFromInputEvents();
             StopActorActionRock();
-            foreach (var kv in _views)
+            foreach (var combatantIdAndTransform in _views)
             {
-                kv.Value?.DOKill(false);
+                combatantIdAndTransform.Value?.DOKill(false);
             }
+
+            if (_currentTurnMarkerTransform != null)
+            {
+                Destroy(_currentTurnMarkerTransform.gameObject);
+                _currentTurnMarkerTransform = null;
+            }
+
+            _turnMarkerLastCombatantId = null;
+        }
+
+        private void SubscribeToInputEvents()
+        {
+            if (InputManager.Instance == null)
+            {
+                return;
+            }
+
+            InputManager.Instance.OnPointerPositionChanged += OnPointerPositionChanged;
+            InputManager.Instance.OnLeftClickPressed += OnLeftClickPressed;
+            InputManager.Instance.OnRightClickPressed += OnRightClickPressed;
+            InputManager.Instance.OnSkillSlotPressed += OnSkillSlotPressed;
+        }
+
+        private void UnsubscribeFromInputEvents()
+        {
+            if (InputManager.Instance == null)
+            {
+                return;
+            }
+
+            InputManager.Instance.OnPointerPositionChanged -= OnPointerPositionChanged;
+            InputManager.Instance.OnLeftClickPressed -= OnLeftClickPressed;
+            InputManager.Instance.OnRightClickPressed -= OnRightClickPressed;
+            InputManager.Instance.OnSkillSlotPressed -= OnSkillSlotPressed;
+        }
+
+        private void OnPointerPositionChanged(Vector2 pointerScreenPosition)
+        {
+            _pointerScreenPosition = pointerScreenPosition;
+            _hasPointerScreenPosition = true;
+        }
+
+        private void OnLeftClickPressed() => _leftClickPressedThisFrame = true;
+        private void OnRightClickPressed() => _rightClickPressedThisFrame = true;
+        private void OnSkillSlotPressed(int zeroBasedSlot) => _skillSlotPressedThisFrame = zeroBasedSlot;
+
+        private void ConsumeFrameInputFlags()
+        {
+            _leftClickPressedThisFrame = false;
+            _rightClickPressedThisFrame = false;
+            _skillSlotPressedThisFrame = null;
         }
 
         private void BeginRound()
@@ -156,10 +334,11 @@ namespace Erumperem.Combat
         {
             if (_battleEnded || _state == null)
             {
+                ConsumeFrameInputFlags();
                 return;
             }
 
-            PickTargetFromMouse();
+            skillButtonBarUIManager?.Tick();
 
             while (!_battleEnded && !_needsPlayerInput && !_presentationBusy)
             {
@@ -174,7 +353,11 @@ namespace Erumperem.Combat
                 TryPlayerHotkeys();
             }
 
+            TryDeselectSkillBarWithRightButton();
+            PickTargetFromMouse();
             SyncUnitVisuals();
+            SyncCurrentTurnMarker();
+            ConsumeFrameInputFlags();
         }
 
         private void PublishPlayerSkillHelpForAlly(Combatant ally, int allyIndex)
@@ -187,6 +370,7 @@ namespace Erumperem.Combat
             var text = CombatSkillBarDebug.BuildHotbarPanelText(ally, allyIndex, _state, _sim, _selectedEnemyTarget);
             presentationHub.PublishPlayerSkillHelp(text);
         }
+
 
         private int FindAllyIndex(Combatant ally)
         {
@@ -201,15 +385,35 @@ namespace Erumperem.Combat
             return 0;
         }
 
-        private void PickTargetFromMouse()
+        /// <summary>Botão direito: limpa o slot da skill escolhido (só um slot pode estar ativo).</summary>
+        private void TryDeselectSkillBarWithRightButton()
         {
-            var mouse = Mouse.current;
-            if (mouse == null || _camera == null || !mouse.leftButton.wasPressedThisFrame)
+            if (!_rightClickPressedThisFrame)
             {
                 return;
             }
 
-            var ray = _camera.ScreenPointToRay(mouse.position.ReadValue());
+            if (!HasSkillBarSelectionPendingUse())
+            {
+                return;
+            }
+
+            ClearSkillBarSelection();
+        }
+
+        private void PickTargetFromMouse()
+        {
+            if (!_leftClickPressedThisFrame || _camera == null || !_hasPointerScreenPosition)
+            {
+                return;
+            }
+
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            var ray = _camera.ScreenPointToRay(_pointerScreenPosition);
             if (!Physics.Raycast(ray, out var hit, 200f))
             {
                 return;
@@ -225,6 +429,18 @@ namespace Erumperem.Combat
                 ally.Identity.Id == tag.combatantId && !ally.Health.IsDead);
             if (hitAlly != null)
             {
+                if (HasSkillBarSelectionPendingUse() && TryCastUiSelectedSkillOnTarget(hitAlly))
+                {
+                    return;
+                }
+
+                if (HasSkillBarSelectionPendingUse())
+                {
+                    Debug.LogWarning("Skill (UI) inválida para este aliado / rank / cooldown.");
+                    PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
+                    return;
+                }
+
                 var idx = 0;
                 for (var i = 0; i < _state.Allies.Count; i++)
                 {
@@ -247,12 +463,79 @@ namespace Erumperem.Combat
                 return;
             }
 
+            if (HasSkillBarSelectionPendingUse() && TryCastUiSelectedSkillOnTarget(hitEnemy))
+            {
+                return;
+            }
+
+            if (HasSkillBarSelectionPendingUse())
+            {
+                Debug.LogWarning("Skill (UI) inválida para este inimigo / rank / cooldown.");
+                PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
+                return;
+            }
+
             _selectedEnemyTarget = hitEnemy;
             Debug.Log($"Alvo: {_selectedEnemyTarget.Identity.Id} (HP {_selectedEnemyTarget.Health.CurrentHp}/{_selectedEnemyTarget.Health.MaxHp})");
             if (_needsPlayerInput && _pendingPlayerActor != null)
             {
                 PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
             }
+        }
+
+        private bool HasSkillBarSelectionPendingUse() =>
+            _skillBarSelectedSlot.HasValue && !string.IsNullOrEmpty(_skillBarSelectedOwnerId);
+
+        private bool TryCastUiSelectedSkillOnTarget(Combatant target)
+        {
+            if (!_needsPlayerInput || _pendingPlayerActor == null || _presentationBusy)
+            {
+                return false;
+            }
+
+            if (!HasSkillBarSelectionPendingUse())
+            {
+                return false;
+            }
+
+            if (!string.Equals(_skillBarSelectedOwnerId, _pendingPlayerActor.Identity.Id, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            var action = PlayerActionBuilder.TryCreate(
+                _state,
+                _sim,
+                _pendingPlayerActor,
+                _skillBarSelectedSlot.Value,
+                target);
+            if (action == null)
+            {
+                return false;
+            }
+
+            if (_state.Enemies.Any(e => e.Identity.Id == target.Identity.Id && !e.Health.IsDead))
+            {
+                _selectedEnemyTarget = target;
+            }
+            else
+            {
+                _selectedEnemyTarget = null;
+            }
+
+            _needsPlayerInput = false;
+            _pendingPlayerActor = null;
+            _presentationBusy = true;
+            ClearSkillBarSelection();
+            StartCoroutine(
+                PresentActionRoutine(
+                    action,
+                    () =>
+                    {
+                        _actorIndex++;
+                        _preparedThisStep = false;
+                    }));
+            return true;
         }
 
         private bool AdvanceCombatStep()
@@ -331,46 +614,16 @@ namespace Erumperem.Combat
 
         private void TryPlayerHotkeys()
         {
-            var keyboard = Keyboard.current;
-            if (keyboard == null || _pendingPlayerActor == null || _presentationBusy)
+            if (_pendingPlayerActor == null || _presentationBusy || !_skillSlotPressedThisFrame.HasValue)
             {
                 return;
             }
 
-            for (var i = 0; i < 7; i++)
+            var requestedSkillSlot = _skillSlotPressedThisFrame.Value;
+            if (!TrySelectSkillBarSlot(_pendingPlayerActor.Identity.Id, requestedSkillSlot))
             {
-                var key = Key.Digit1 + i;
-                if (!keyboard[key].wasPressedThisFrame)
-                {
-                    continue;
-                }
-
-                var action = PlayerActionBuilder.TryCreate(
-                    _state,
-                    _sim,
-                    _pendingPlayerActor,
-                    i,
-                    _selectedEnemyTarget);
-
-                if (action == null)
-                {
-                    Debug.LogWarning($"Skill slot {i + 1} inválida (CD, alvo, rank ou fora do loadout).");
-                    PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
-                    return;
-                }
-
-                _needsPlayerInput = false;
-                _pendingPlayerActor = null;
-                _presentationBusy = true;
-                StartCoroutine(
-                    PresentActionRoutine(
-                        action,
-                        () =>
-                        {
-                            _actorIndex++;
-                            _preparedThisStep = false;
-                        }));
-                return;
+                Debug.LogWarning($"Skill slot {requestedSkillSlot + 1} indisponível (CD, alvo, rank ou fora do loadout).");
+                PublishPlayerSkillHelpForAlly(_pendingPlayerActor, FindAllyIndex(_pendingPlayerActor));
             }
         }
 
@@ -384,6 +637,9 @@ namespace Erumperem.Combat
             presentationHub?.PublishCombatEnded();
             _battleEnded = true;
             _needsPlayerInput = false;
+            ClearSkillBarSelection();
+            DeactivateCurrentTurnMarker();
+            skillButtonBarUIManager?.OnBattleEnded();
             _sim.EmitBattleEnded(_state);
             LogLastEvents();
             Debug.Log($"Batalha terminou. Vencedor: {_state.Winner}");
@@ -460,7 +716,7 @@ namespace Erumperem.Combat
                     LogLastEvents();
                 }
 
-                var actorAfter = FindCombatant(action.Actor.Identity.Id);
+                var actorAfter = FindCombatantById(action.Actor.Identity.Id);
                 if (actorAfter != null &&
                     !actorAfter.Health.IsDead &&
                     _views.TryGetValue(action.Actor.Identity.Id, out var actorVisualRoot))
@@ -560,7 +816,7 @@ namespace Erumperem.Combat
                 return;
             }
 
-            var combatant = FindCombatant(targetId);
+            var combatant = FindCombatantById(targetId);
             if (combatant == null || combatant.Health.IsDead)
             {
                 return;
@@ -648,6 +904,85 @@ namespace Erumperem.Combat
             tag.combatantId = combatantId;
         }
 
+        private void DeactivateCurrentTurnMarker()
+        {
+            if (_currentTurnMarkerTransform == null)
+            {
+                return;
+            }
+
+            _currentTurnMarkerTransform.gameObject.SetActive(false);
+            _turnMarkerLastCombatantId = null;
+        }
+
+        private void SyncCurrentTurnMarker()
+        {
+            if (currentTurnMarkerPrefab == null)
+            {
+                return;
+            }
+
+            if (_state == null || _battleEnded)
+            {
+                DeactivateCurrentTurnMarker();
+                return;
+            }
+
+            var shouldShow = _needsPlayerInput &&
+                !_presentationBusy &&
+                _pendingPlayerActor != null &&
+                !_pendingPlayerActor.Health.IsDead &&
+                IsPlayerControlled(_pendingPlayerActor);
+
+            if (!shouldShow)
+            {
+                DeactivateCurrentTurnMarker();
+                return;
+            }
+
+            if (!_views.TryGetValue(_pendingPlayerActor.Identity.Id, out var parent) || parent == null)
+            {
+                return;
+            }
+
+            if (_currentTurnMarkerTransform == null)
+            {
+                var go = Instantiate(currentTurnMarkerPrefab, parent, false);
+                _currentTurnMarkerTransform = go.transform;
+            }
+            else
+            {
+                if (_currentTurnMarkerTransform.parent != parent)
+                {
+                    _currentTurnMarkerTransform.SetParent(parent, false);
+                }
+
+                if (!_currentTurnMarkerTransform.gameObject.activeSelf)
+                {
+                    _currentTurnMarkerTransform.gameObject.SetActive(true);
+                }
+            }
+
+            if (!string.Equals(_turnMarkerLastCombatantId, _pendingPlayerActor.Identity.Id, StringComparison.Ordinal))
+            {
+                _turnMarkerLastCombatantId = _pendingPlayerActor.Identity.Id;
+                _turnMarkerSpinZDegrees = 0f;
+            }
+
+            _currentTurnMarkerTransform.localPosition = currentTurnMarkerLocalOffset;
+            _turnMarkerSpinZDegrees += currentTurnMarkerZSpinDegreesPerSecond * Time.deltaTime;
+            if (_turnMarkerSpinZDegrees >= 360f)
+            {
+                _turnMarkerSpinZDegrees -= 360f;
+            }
+
+            var baseE = currentTurnMarkerBaseEuler;
+            _currentTurnMarkerTransform.localEulerAngles = new Vector3(
+                baseE.x,
+                baseE.y,
+                baseE.z + _turnMarkerSpinZDegrees);
+        }
+
         private void SyncUnitVisuals()
         {
             foreach (var combatantIdAndCapsule in _views)
@@ -659,7 +994,7 @@ namespace Erumperem.Combat
                     continue;
                 }
 
-                var combatant = FindCombatant(combatantId);
+                var combatant = FindCombatantById(combatantId);
                 if (combatant == null)
                 {
                     continue;
