@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
 
 public sealed class ChangeSceneFKeysCheat : MonoBehaviour
 {
@@ -22,25 +21,35 @@ public sealed class ChangeSceneFKeysCheat : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        var keyboard = Keyboard.current;
-        if (keyboard == null)
+        if (InputManager.Instance != null)
         {
-            return;
+            InputManager.Instance.OnSceneCheatPressed += HandleSceneCheatPressed;
         }
+    }
 
-        if (keyboard.f1Key.wasPressedThisFrame)
+    private void OnDisable()
+    {
+        if (InputManager.Instance != null)
         {
-            TryLoadSceneByBuildIndex(F1BuildIndex);
+            InputManager.Instance.OnSceneCheatPressed -= HandleSceneCheatPressed;
         }
-        else if (keyboard.f2Key.wasPressedThisFrame)
+    }
+
+    private void HandleSceneCheatPressed(int sceneSlotIndex)
+    {
+        switch (sceneSlotIndex)
         {
-            TryLoadSceneByBuildIndex(F2BuildIndex);
-        }
-        else if (keyboard.f3Key.wasPressedThisFrame)
-        {
-            TryLoadSceneByBuildIndex(F3BuildIndex);
+            case 0:
+                TryLoadSceneByBuildIndex(F1BuildIndex);
+                break;
+            case 1:
+                TryLoadSceneByBuildIndex(F2BuildIndex);
+                break;
+            case 2:
+                TryLoadSceneByBuildIndex(F3BuildIndex);
+                break;
         }
     }
 

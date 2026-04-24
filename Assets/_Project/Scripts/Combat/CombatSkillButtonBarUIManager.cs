@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using Game.Core.Models;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Erumperem.Combat
 {
     /// <summary>
-    /// Uma linha de skills por combatente, uma visível; hover no 3D controla o visível; cores vêm de
-    /// <see cref="SkillUiColorPalette"/>. A seleção fica em <see cref="CombatPrototypeController"/>.
+    /// Uma row por combatente, uma visível. Sem skill selecionada, o hover 3D mostra a row desse personagem.
+    /// Com slot selecionado (clique ou 1–7), a row do dono fica travada ao hover.
     /// </summary>
     public sealed class CombatSkillButtonBarUIManager : MonoBehaviour
     {
@@ -20,14 +19,11 @@ namespace Erumperem.Combat
         private CombatPrototypeController _controller;
         private readonly Dictionary<string, CharacterSkillButtonsRowView> _rowsByCombatantId =
             new(StringComparer.Ordinal);
-        /// <summary>Combatente cuja barra fica visível: só muda ao passar o rato sobre <b>outro</b> personagem, não ao sair para o vazio.</summary>
         private string _activeSkillRowCombatantId;
-        private Camera _combatCamera;
 
         public void Initialize(CombatPrototypeController controller)
         {
             _controller = controller;
-            _combatCamera = Camera.main;
             if (rowsParent == null)
             {
                 rowsParent = transform;
@@ -69,12 +65,14 @@ namespace Erumperem.Combat
                 var rowObject = Instantiate(characterSkillButtonsRowPrefab, rowsParent, false);
                 rowObject.name = "SkillRow_" + id;
                 rowObject.SetActive(false);
-                var row = rowObject.GetComponent<CharacterSkillButtonsRowView>() ?? rowObject.AddComponent<CharacterSkillButtonsRowView>();
+                var row = rowObject.GetComponent<CharacterSkillButtonsRowView>() ??
+                    rowObject.AddComponent<CharacterSkillButtonsRowView>();
                 row.Build(this, id, skillButtonPanelPrefab);
                 _rowsByCombatantId[id] = row;
             }
         }
 
+        /// <summary>Clique num botão de skill — mesmo fluxo que a tecla 1–7 (<see cref="CombatPrototypeController.TrySelectSkillBarSlot"/>).</summary>
         public void NotifySkillBarSlotSelected(string ownerCombatantId, int zeroBasedSlot)
         {
             if (_controller == null)
@@ -82,12 +80,7 @@ namespace Erumperem.Combat
                 return;
             }
 
-            if (string.IsNullOrEmpty(ownerCombatantId) || (zeroBasedSlot < 0 || zeroBasedSlot > 6))
-            {
-                return;
-            }
-
-            _controller.SetSkillBarSelectionFromUi(ownerCombatantId, zeroBasedSlot);
+            _controller.TrySelectSkillBarSlot(ownerCombatantId, zeroBasedSlot);
         }
 
         public void OnBattleEnded()
@@ -103,6 +96,7 @@ namespace Erumperem.Combat
 
         public void SyncVisibleRowWithBattle()
         {
+            TryLockActiveRowToSelection();
             if (string.IsNullOrEmpty(_activeSkillRowCombatantId) ||
                 !_rowsByCombatantId.TryGetValue(_activeSkillRowCombatantId, out var row) ||
                 row == null)
@@ -128,6 +122,63 @@ namespace Erumperem.Combat
                 _controller.CurrentSelectedEnemy);
         }
 
+        /// <summary>Se houver slot da hotbar selecionado, fixa a row ao dono.</summary>
+        private bool TryLockActiveRowToSelection()
+        {
+            if (_controller == null)
+            {
+                return false;
+            }
+
+            _controller.GetSkillBarSelection(out var barSlot, out var barOwner);
+            if (barSlot.HasValue && !string.IsNullOrEmpty(barOwner))
+            {
+                _activeSkillRowCombatantId = barOwner;
+                return true;
+            }
+
+            return false;
+        }
+
+        private Combatant TryRaycastHoveredLivingCombatant()
+        {
+            if (_controller == null)
+            {
+                return null;
+            }
+
+            var cam = Camera.main;
+            if (cam == null)
+            {
+                return null;
+            }
+
+            if (InputManager.Instance == null || !InputManager.Instance.TryGetPointerScreenPosition(out var pointerScreenPosition))
+            {
+                return null;
+            }
+
+            var ray = cam.ScreenPointToRay(pointerScreenPosition);
+            if (!Physics.Raycast(ray, out var hit, worldRaycastDistance))
+            {
+                return null;
+            }
+
+            var tag = hit.collider.GetComponentInParent<CombatCapsuleTag>();
+            if (tag == null || string.IsNullOrEmpty(tag.combatantId))
+            {
+                return null;
+            }
+
+            var hovered = _controller.FindCombatantById(tag.combatantId);
+            if (hovered == null || hovered.Health.IsDead)
+            {
+                return null;
+            }
+
+            return hovered;
+        }
+
         public void Tick()
         {
             if (_controller == null || _controller.BattleState == null)
@@ -135,47 +186,13 @@ namespace Erumperem.Combat
                 return;
             }
 
-            if (_combatCamera == null)
+            if (!TryLockActiveRowToSelection())
             {
-                _combatCamera = Camera.main;
-            }
-
-            if (_combatCamera == null)
-            {
-                return;
-            }
-
-            var mouse = Mouse.current;
-            if (mouse == null)
-            {
-                return;
-            }
-
-            var ray = _combatCamera.ScreenPointToRay(mouse.position.ReadValue());
-            Combatant hovered = null;
-            if (Physics.Raycast(ray, out var hit, worldRaycastDistance))
-            {
-                var tag = hit.collider.GetComponentInParent<CombatCapsuleTag>();
-                if (tag != null && !string.IsNullOrEmpty(tag.combatantId))
+                var hovered = TryRaycastHoveredLivingCombatant();
+                if (hovered != null && !string.IsNullOrEmpty(hovered.Identity.Id))
                 {
-                    hovered = _controller.FindCombatantById(tag.combatantId);
-                    if (hovered != null && hovered.Health.IsDead)
-                    {
-                        hovered = null;
-                    }
+                    _activeSkillRowCombatantId = hovered.Identity.Id;
                 }
-            }
-
-            var hoveredId = hovered?.Identity?.Id;
-            if (!string.IsNullOrEmpty(hoveredId))
-            {
-                if (!string.IsNullOrEmpty(_activeSkillRowCombatantId) &&
-                    !string.Equals(_activeSkillRowCombatantId, hoveredId, StringComparison.Ordinal))
-                {
-                    _controller.ClearSkillBarSelection();
-                }
-
-                _activeSkillRowCombatantId = hoveredId;
             }
 
             if (string.IsNullOrEmpty(_activeSkillRowCombatantId))

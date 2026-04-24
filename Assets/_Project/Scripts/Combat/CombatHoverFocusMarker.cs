@@ -1,6 +1,5 @@
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Erumperem.Combat
 {
@@ -75,14 +74,13 @@ namespace Erumperem.Combat
                 return;
             }
 
-            var mouse = Mouse.current;
-            if (mouse == null)
+            if (InputManager.Instance == null || !InputManager.Instance.TryGetPointerScreenPosition(out var pointerScreenPosition))
             {
                 Hide();
                 return;
             }
 
-            var ray = raycastCamera.ScreenPointToRay(mouse.position.ReadValue());
+            var ray = raycastCamera.ScreenPointToRay(pointerScreenPosition);
             if (!Physics.Raycast(ray, out var hit, raycastMaxDistance, raycastLayerMask))
             {
                 Hide();

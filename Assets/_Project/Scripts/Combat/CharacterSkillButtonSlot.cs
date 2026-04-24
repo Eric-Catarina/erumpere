@@ -29,8 +29,7 @@ namespace Erumperem.Combat
         private const float ClickPunchDuration = 0.12f;
         private const int ClickPunchVibrato = 6;
         private const float ClickPunchElasticity = 0.4f;
-        private const float SelectedLocalScaleY = 0.88f;
-        private const float SelectedPositionYOffset = -3f;
+        private const float SelectedLocalScale = 0.8f;
         private const float SelectionTweenDuration = 0.1f;
         private const string DefaultDescriptionPanelName = "SkillDescriptionPanel";
         private const string DefaultDescriptionTextName = "SkillDescriptionText";
@@ -68,6 +67,7 @@ namespace Erumperem.Combat
         private Color _panelColorBase;
         private Color _buttonColorBase;
         private bool? _lastAppliedIsSelected;
+        private TextMeshProUGUI _hotkeyDigitLabel;
 
         private void Awake()
         {
@@ -136,6 +136,7 @@ namespace Erumperem.Combat
                 _skillButton.targetGraphic.raycastTarget = true;
             }
 
+            TryCacheHotkeyDigitLabel();
             TryResolveDescriptionUi();
         }
 
@@ -160,11 +161,21 @@ namespace Erumperem.Combat
             gameObject.SetActive(visible);
         }
 
-        public void ApplyVisuals(Color skillColor, bool interactable, bool selected, string playerDescriptionLine)
+        public void ApplyVisuals(
+            Color skillColor,
+            bool interactable,
+            bool selected,
+            string playerDescriptionLine,
+            int hotkeyLabelOneToSeven)
         {
             _playerDescriptionLine = playerDescriptionLine ?? string.Empty;
             _isInteractable = interactable;
             _isSelected = selected;
+            TryCacheHotkeyDigitLabel();
+            if (_hotkeyDigitLabel != null && hotkeyLabelOneToSeven >= 1 && hotkeyLabelOneToSeven <= 7)
+            {
+                _hotkeyDigitLabel.text = hotkeyLabelOneToSeven.ToString();
+            }
             if (_skillButton != null)
             {
                 _skillButton.interactable = interactable;
@@ -208,24 +219,15 @@ namespace Erumperem.Combat
                 if (wasFirstLayoutApply && !selected)
                 {
                     _rootRectTransform.localScale = _localScaleBase;
-                    _rootRectTransform.anchoredPosition = new Vector2(
-                        _anchoredBase.x,
-                        _anchoredBase.y);
                 }
                 else if (selected)
                 {
                     var targetScale = new Vector3(
-                        _localScaleBase.x,
-                        SelectedLocalScaleY * _localScaleBase.y,
-                        _localScaleBase.z);
+                        SelectedLocalScale * _localScaleBase.x,
+                        SelectedLocalScale * _localScaleBase.y,
+                        SelectedLocalScale * _localScaleBase.z);
                     _rootRectTransform
                         .DOScale(targetScale, SelectionTweenDuration)
-                        .SetEase(Ease.OutCubic)
-                        .SetLink(gameObject);
-                    _rootRectTransform
-                        .DOAnchorPosY(
-                            _anchoredBase.y + SelectedPositionYOffset,
-                            SelectionTweenDuration)
                         .SetEase(Ease.OutCubic)
                         .SetLink(gameObject);
                 }
@@ -233,10 +235,6 @@ namespace Erumperem.Combat
                 {
                     _rootRectTransform
                         .DOScale(_localScaleBase, SelectionTweenDuration)
-                        .SetEase(Ease.OutCubic)
-                        .SetLink(gameObject);
-                    _rootRectTransform
-                        .DOAnchorPosY(_anchoredBase.y, SelectionTweenDuration)
                         .SetEase(Ease.OutCubic)
                         .SetLink(gameObject);
                 }
@@ -346,6 +344,25 @@ namespace Erumperem.Combat
             if (_buttonRect != null)
             {
                 _buttonRect.DOKill(false);
+            }
+        }
+
+        private void TryCacheHotkeyDigitLabel()
+        {
+            if (_hotkeyDigitLabel != null || _skillButton == null)
+            {
+                return;
+            }
+
+            if (_skillButton.transform.childCount > 0)
+            {
+                var firstChild = _skillButton.transform.GetChild(0);
+                _hotkeyDigitLabel = firstChild.GetComponent<TextMeshProUGUI>();
+            }
+
+            if (_hotkeyDigitLabel == null)
+            {
+                _hotkeyDigitLabel = _skillButton.GetComponentInChildren<TextMeshProUGUI>(true);
             }
         }
 

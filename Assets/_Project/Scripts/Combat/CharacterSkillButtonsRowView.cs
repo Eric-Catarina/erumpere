@@ -137,12 +137,12 @@ namespace Erumperem.Combat
                 var playerLine = CombatSkillPlayerDescriptionFormatter.BuildSummaryLine(skillDefinition);
                 var skillColor = SkillUiColorPalette.GetColorForSkillId(skillId);
                 var interactable = !isEnemy && canThisRowIssuePlayerCommands &&
-                    PlayerActionBuilder.TryCreate(
+                    CombatSkillSlotUiEligibility.IsSlotUiInteractable(
                         battleState,
                         battleSimulator,
                         subject,
                         slotIndex,
-                        selectedEnemyOrNull) != null;
+                        selectedEnemyOrNull);
 
                 var isSelected = barSelectedZeroBased.HasValue &&
                     barSelectedZeroBased.Value == slotIndex &&
@@ -152,7 +152,7 @@ namespace Erumperem.Combat
                         _combatantId,
                         StringComparison.Ordinal);
                 slot.SetVisible(true);
-                slot.ApplyVisuals(skillColor, interactable, isSelected, playerLine);
+                slot.ApplyVisuals(skillColor, interactable, isSelected, playerLine, hotkeyLabelOneToSeven: slotIndex + 1);
             }
         }
     }
