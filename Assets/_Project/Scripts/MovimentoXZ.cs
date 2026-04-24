@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody))]
 public class MovimentoXZ : MonoBehaviour
@@ -15,14 +14,27 @@ public class MovimentoXZ : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 	}
 
-	void Update()
+	private void OnEnable()
 	{
-		Vector2 input = Keyboard.current != null ? new Vector2(
-			(Keyboard.current.dKey.isPressed ? 1 : 0) - (Keyboard.current.aKey.isPressed ? 1 : 0),
-			(Keyboard.current.wKey.isPressed ? 1 : 0) - (Keyboard.current.sKey.isPressed ? 1 : 0)
-		) : Vector2.zero;
+		if (InputManager.Instance != null)
+		{
+			InputManager.Instance.OnMoveChanged += HandleMoveChanged;
+		}
+	}
 
-		movimento = new Vector3(input.x, 0f, input.y).normalized;
+	private void OnDisable()
+	{
+		if (InputManager.Instance != null)
+		{
+			InputManager.Instance.OnMoveChanged -= HandleMoveChanged;
+		}
+
+		movimento = Vector3.zero;
+	}
+
+	private void HandleMoveChanged(Vector2 movementInput)
+	{
+		movimento = new Vector3(movementInput.x, 0f, movementInput.y).normalized;
 	}
 
 	void FixedUpdate()
