@@ -333,8 +333,6 @@ namespace Erumperem.Combat
                 return;
             }
 
-            skillButtonBarUIManager?.Tick();
-
             while (!_battleEnded && !_needsPlayerInput && !_presentationBusy)
             {
                 if (!AdvanceCombatStep())
@@ -343,6 +341,8 @@ namespace Erumperem.Combat
                 }
             }
 
+            // Depois de preparar turno atual, a barra já sabe quem está a agir.
+            skillButtonBarUIManager?.Tick();
             TryDeselectSkillBarWithRightButton();
             PickTargetFromMouse();
             SyncUnitVisuals();

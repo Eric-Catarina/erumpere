@@ -202,8 +202,16 @@ namespace Erumperem.Combat
 
             if (!TryLockActiveRowToSelection())
             {
+                var pendingPlayerCombatantId = _controller.PendingPlayerCombatantId;
+                if (!string.IsNullOrEmpty(pendingPlayerCombatantId))
+                {
+                    _activeSkillRowCombatantId = pendingPlayerCombatantId;
+                }
+
                 var hovered = TryRaycastHoveredLivingCombatant();
-                if (hovered != null && !string.IsNullOrEmpty(hovered.Identity.Id))
+                if (string.IsNullOrEmpty(_activeSkillRowCombatantId) &&
+                    hovered != null &&
+                    !string.IsNullOrEmpty(hovered.Identity.Id))
                 {
                     _activeSkillRowCombatantId = hovered.Identity.Id;
                 }
