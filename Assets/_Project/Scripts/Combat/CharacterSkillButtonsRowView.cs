@@ -15,7 +15,7 @@ namespace Erumperem.Combat
     [DisallowMultipleComponent]
     public sealed class CharacterSkillButtonsRowView : MonoBehaviour
     {
-        private const int MaxSlots = 7;
+        private const int MaxSlots = 6;
         private const float RowIntroScaleFrom = 0.94f;
         private const float RowIntroDuration = 0.2f;
 
