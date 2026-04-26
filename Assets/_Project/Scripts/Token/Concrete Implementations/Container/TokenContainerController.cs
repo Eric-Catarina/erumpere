@@ -146,7 +146,7 @@ namespace Core.Tokens
         {
             if (!container.model.tokens.Contains(controller)) return;
 
-            UnApplySynergies(controller);
+            UnApplySynergies(controller, container);
             container.model.tokens.Remove(controller);
             container.view.RemoveToken(controller);    // FIX: view removal now happens AFTER model removal,
                                                        // ensuring view always reflects actual model state.
@@ -220,10 +220,21 @@ namespace Core.Tokens
         /// Reverts any applied synergies when a token is removed.
         /// (Not yet implemented)
         /// </summary>
-        private static void UnApplySynergies(TokenController tokenController)
-        {
+        // Trecho para substituir UnApplySynergies em TokenContainerController.cs
 
+        /// <summary>
+        /// Reverts any reverseable synergy applied by this token.
+        /// Called automatically by RemoveTokenFromContainer before the token leaves the model.
+        /// Only synergies that implement IReverseableSynergy are affected —
+        /// destructive synergies (Cancellation, Override, Absorption, Transformation, Evolution, Spread)
+        /// are intentionally excluded because their effects are irreversible by design.
+        /// </summary>
+        private static void UnApplySynergies(TokenController tokenController, TokenContainerController container)
+        {
+            if (tokenController is IReverseableSynergy reverseable)
+                reverseable.ReverseSynergy(container);
         }
+
 
         /// <summary>
         /// Returns the first token of type T in the container.

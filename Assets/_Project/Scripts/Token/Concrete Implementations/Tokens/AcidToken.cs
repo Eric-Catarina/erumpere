@@ -14,16 +14,8 @@ namespace Core.Tokens
     public class AcidToken : TokenController, ICancellationSynergy
     {
         public HashSet<Type> cancellationSynergys { get; } = new HashSet<Type> { typeof(ArmorToken) };
-
-        public AcidToken() : base(
-            typeof(AcidToken).Name,
-            new IndependentStackData(),
-            new IOnHitTokenAllocation())
-        { }
-
-        public CancellationSynergyContext BuildContext(TokenAllocationContext context) =>
-            new CancellationSynergyContext(context.TokenContainerController, this);
-
+        public AcidToken() : base(typeof(AcidToken).Name, new IndependentStackData(), new IOnHitTokenAllocation()) { }
+        public CancellationSynergyContext BuildContext(TokenAllocationContext context) => new CancellationSynergyContext(context.TokenContainerController, this);
         public override void ExecuteTokenEffect() => base.ExecuteTokenEffect();
     }
 }

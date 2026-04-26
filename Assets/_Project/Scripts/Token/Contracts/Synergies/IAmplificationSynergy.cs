@@ -1,16 +1,13 @@
 using System;
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
-using Services.DebugUtilities.Console;
-using System.Threading.Tasks;
 
 // MODIFIER — increases this token's effectiveness based on how many matching tokens are active.
 // Binary presence check: set amplifierPerStack = 0 and matchCount >= 1.
 // CanApply: requires at least one amplifier token present.
+// Reverseable: restores the amplified value to its base when this token is removed.
 namespace Core.Tokens
 {
-    public interface IAmplificationSynergy : ITokenSynergy
+    public interface IAmplificationSynergy : ITokenSynergy, IReverseableSynergy
     {
         HashSet<Type> amplificationSynergys { get; }
         AmplificationSynergyContext BuildContext(TokenAllocationContext context);
@@ -23,6 +20,14 @@ namespace Core.Tokens
 
             if (matchCount > 0)
                 context.onAmplify?.Invoke(matchCount * context.amplifierPerStack);
+        }
+
+        // Calls onAmplify with 0 so the implementor resets the stored value to its base.
+        // Convention: the implementor must treat 0 as "no amplification active".
+        void IReverseableSynergy.ReverseSynergy(TokenContainerController tokenContainer)
+        {
+            var ctx = BuildContext(new TokenAllocationContext(string.Empty, tokenContainer, (TokenController)this));
+            ctx.onAmplify?.Invoke(0f);
         }
     }
 

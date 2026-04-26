@@ -24,7 +24,8 @@ namespace Core.Tokens
 
         public InversionSynergyContext BuildContext(TokenAllocationContext context) =>
             new InversionSynergyContext(context.TokenContainerController, this,
-                () => isInverted = true);
+                () => isInverted = true,
+                () => isInverted = false);
 
         public override void ExecuteTokenEffect() => base.ExecuteTokenEffect();
     }

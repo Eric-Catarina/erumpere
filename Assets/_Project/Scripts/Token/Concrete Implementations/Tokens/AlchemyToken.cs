@@ -16,13 +16,7 @@ namespace Core.Tokens
     {
         public HashSet<Type> conversionSynergys { get; } = new HashSet<Type> { typeof(PoisonToken) };
         private readonly Dictionary<TokenController, float> progress = new();
-
-        public AlchemyToken() : base(
-            typeof(AlchemyToken).Name,
-            new RefreshDurationStackData(5),
-            new IOnEventTokenAllocation(null))
-        { }
-
+        public AlchemyToken() : base(typeof(AlchemyToken).Name, new RefreshDurationStackData(5), new IOnEventTokenAllocation(null)) { }
         public ConversionSynergyContext BuildContext(TokenAllocationContext context) =>
             new ConversionSynergyContext(context.TokenContainerController, this, 0.25f,
                 async (target, delta) =>
@@ -37,7 +31,6 @@ namespace Core.Tokens
                         progress.Remove(target);
                     }
                 });
-
         public override void ExecuteTokenEffect() => base.ExecuteTokenEffect();
     }
 }
