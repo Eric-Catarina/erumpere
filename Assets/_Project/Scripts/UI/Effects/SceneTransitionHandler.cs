@@ -4,24 +4,22 @@ using DG.Tweening;
 using System.Collections;
 using UnityEngine.UI;
 
-public class SceneTransitionManager : MonoBehaviour
+public class SceneTransitionHandler : MonoBehaviour
 {
-    [Header("Configurações do Fade")]
+    [Header("Configuraï¿½ï¿½es do Fade")]
     public CanvasGroup fadeCanvasGroup;
     public float fadeDuration = 1f;
 
     [Header("Cores do Fade")]
     public Color fadeColor = Color.black;
 
-    private static SceneTransitionManager instance;
+    private static SceneTransitionHandler instance;
 
     void Awake()
     {
         if (instance == null)
         {
             instance = this;
-            DontDestroyOnLoad(gameObject);
-
             if (fadeCanvasGroup == null)
             {
                 CreateFadeCanvasGroup();
