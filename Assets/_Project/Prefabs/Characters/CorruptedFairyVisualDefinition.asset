@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b44943d9163abe44f9b051236841ffdf, type: 3}
-  m_Name: CorrupterMiner
+  m_Name: CorruptedFairyVisualDefinition
   m_EditorClassIdentifier: Assembly-CSharp::Erumperem.Combat.EnemyVisualDefinition
   tier: 0
-  elementType: 2
+  elementType: 1
   spawnWeight: 1
-  battlePrefab: {fileID: 4068692333910293207, guid: b6274cc697882a846ac58ebc3e98ffcd, type: 3}
+  battlePrefab: {fileID: 5574332463597868988, guid: 030827a5940fa4e48aa2f23ea25497cf, type: 3}
