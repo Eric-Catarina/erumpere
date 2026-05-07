@@ -48,9 +48,33 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8604064213334082145, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2657433190176915484, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
       propertyPath: m_Name
       value: Halt
+      objectReference: {fileID: 0}
+    - target: {fileID: 2628792227621415276, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5231334449279620403, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7106075918261251763, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7919688842686022539, guid: 6c70729fcfd02044a8ef95fb640550f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

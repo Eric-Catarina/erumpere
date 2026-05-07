@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6c70729fcfd02044a8ef95fb640550f4
+guid: 1f4f0cd97da2a7d40a6c739b0726af04
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -93,14 +93,14 @@ ModelImporter:
       takeName: ArmatureHaltBase|Iddle
       internalID: 923021218268379330
       firstFrame: 0
-      lastFrame: 30
+      lastFrame: 75
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
